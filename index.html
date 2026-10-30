@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alibi Admin</title>
+<style>
+:root{--ink:#0E0E0F;--surface:#141416;--surface2:#1C1C1F;--line:#2A2A2E;--chalk:#F2EFE9;--muted:rgba(242,239,233,.58);--faint:rgba(242,239,233,.3);--orange:#FF6B2E;--green:#5EE39A;--red:#FF3B30;--gold:#F5C542}
+*{box-sizing:border-box}
+:root{color-scheme:dark}
+input[type=datetime-local]{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;color:var(--chalk);margin-top:4px}
+body{margin:0;background:var(--ink);color:var(--chalk);font:14px/1.45 -apple-system,system-ui,Helvetica,Arial,sans-serif}
+button,select,input{font:inherit;color:inherit}
+.mono{font-family:ui-monospace,Menlo,monospace}
+header{position:sticky;top:0;z-index:5;background:rgba(14,14,15,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{max-width:1280px;margin:0 auto;padding:12px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:.14em;color:var(--orange);font-size:13px}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:none;border:0;padding:8px 12px;border-radius:999px;color:var(--muted);cursor:pointer;font-weight:600}
+nav button.on{background:var(--surface2);color:var(--chalk)}
+.spacer{flex:1}
+.pill{background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.pill:hover{border-color:var(--faint)}
+main{max-width:1280px;margin:0 auto;padding:20px}
+h2{font-size:22px;margin:4px 0 4px;font-weight:800}
+.sub{color:var(--muted);margin:0 0 16px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;color:var(--faint);font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--surface)}
+.who{display:flex;align-items:center;gap:10px}
+.av{width:32px;height:32px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-weight:800;font-size:12px;overflow:hidden;flex:none}
+.av img{width:100%;height:100%;object-fit:cover}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);font-size:12px;margin:2px 4px 2px 0;white-space:nowrap}
+.chip.g{border-color:rgba(94,227,154,.4);color:var(--green)} .chip.o{border-color:rgba(255,107,46,.45);color:var(--orange)}
+.tag{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--surface2);color:var(--faint);margin-left:6px}
+.muted{color:var(--muted)} .faint{color:var(--faint)} .good{color:var(--green)} .bad{color:var(--red)} .warn{color:var(--gold)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+select,input[type=text],input[type=email],input[type=password]{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.post .ph{aspect-ratio:3/4;background:var(--surface2);display:grid;place-items:center;color:var(--faint);position:relative}
+.post .ph img,.post .ph video{width:100%;height:100%;object-fit:cover}
+.post .meta{padding:10px 12px}
+.post .void{position:absolute;top:8px;left:8px;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+.post .vid{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);font-size:11px;padding:2px 8px;border-radius:999px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card h3{margin:0 0 2px;font-size:17px}
+.member{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.member:last-child{border-bottom:0}
+.x{background:none;border:1px solid var(--line);border-radius:8px;padding:2px 8px;cursor:pointer;color:var(--muted)}
+.x:hover{border-color:var(--red);color:var(--red)}
+.add{display:flex;gap:8px;margin-top:10px} .add select{flex:1}
+.btn{background:var(--orange);color:var(--ink);border:0;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer}
+.btn.g{background:var(--green)} .btn:disabled{opacity:.5;cursor:default}
+.days{display:flex;gap:3px} .d{width:18px;height:18px;border-radius:4px;background:var(--surface2);border:1px solid var(--line)}
+.d.p{background:var(--green);border-color:var(--green)} .d.h{background:linear-gradient(to top,var(--green) 50%,var(--surface2) 50%);border-color:var(--green)} .d.m{background:rgba(255,59,48,.75);border-color:var(--red)} .d.n{opacity:.25} .d.t{outline:2px solid var(--chalk);outline-offset:1px}
+.dayhead{display:flex;gap:3px} .dayhead span{width:18px;text-align:center;font-size:10px;color:var(--faint)}
+.daygroup{margin-bottom:18px} .daygroup h4{margin:0 0 6px;color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.open{display:flex;gap:12px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.open .t{width:70px;color:var(--muted)}
+.login{max-width:380px;margin:12vh auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px}
+.login h1{margin:0 0 4px;font-size:26px;font-weight:900} .login input{width:100%;margin:6px 0}
+.login .btn{width:100%;margin-top:8px;padding:11px}
+.err{color:var(--red);margin-top:10px;min-height:1.2em}
+.drawer{position:fixed;inset:0 0 0 auto;width:min(560px,100%);background:var(--ink);border-left:1px solid var(--line);z-index:10;overflow:auto;padding:20px;box-shadow:-30px 0 60px rgba(0,0,0,.5)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px} .stat b{display:block;font-size:20px}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px} .thumbs div{aspect-ratio:3/4;background:var(--surface2);border-radius:10px;overflow:hidden} .thumbs img{width:100%;height:100%;object-fit:cover}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--line);padding:10px 16px;border-radius:12px;z-index:20}
+.more{display:block;margin:18px auto}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:30;display:grid;place-items:center;cursor:zoom-out}
+.lightbox img,.lightbox video{max-width:94vw;max-height:94vh;border-radius:12px}
+.sheet{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.sheet table{min-width:1480px;table-layout:fixed}
+.sheet th{background:var(--surface2);position:sticky;top:0}
+.sheet td{padding:0;border-right:1px solid var(--line);height:38px}
+.sheet td.rn,.sheet th.rn{width:34px;text-align:center;color:var(--faint);font-size:11px;padding:0 4px}
+.sheet td.ro{padding:0 10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet tr.gh td{background:var(--ink);padding:8px 12px;font-weight:700;color:var(--chalk);border-right:0;height:auto}
+.cell{width:100%;height:38px;background:transparent;border:0;border-radius:0;padding:0 10px;outline:none}
+select.cell{appearance:none;cursor:pointer}
+.cell:hover{background:rgba(242,239,233,.04)}
+.cell:focus{background:var(--surface2);box-shadow:inset 0 0 0 2px var(--orange)}
+.cell.b{font-weight:700}
+.cell.st.good{color:var(--green)} .cell.st.warn,.cell.warn{color:var(--gold)} .cell.st.bad{color:var(--red)}
+.cell.saving{box-shadow:inset 0 0 0 2px var(--faint)} .cell.saved{box-shadow:inset 0 0 0 2px var(--green)}
+.sheet .del{border:0;font-size:16px;padding:0 10px;height:38px}
+.newrow td{background:rgba(255,107,46,.04)}
+@media (max-width:700px){ .hide-sm{display:none} .stats{grid-template-columns:repeat(2,1fr)} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script>
+// Alibi admin console. Every call is a server function that checks you're an admin.
+const DEMO = new URLSearchParams(location.search).has('demo');
+const cfg = window.ALIBI || {};
+const sb = !DEMO && cfg.url ? supabase.createClient(cfg.url, cfg.key) : null;
+const $ = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstChild; };
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const app = document.getElementById('app');
+let S = { tab: localStorage.getItem('alibi.tab') || 'roster', roster: [], rosterGroup: '', hideTest: localStorage.getItem('alibi.hideTest') !== '0',
+          people: [], circles: [], posts: [], postFilter: { user: '', circle: '' }, urls: {} };
+
+function ago(t) {
+  if (!t) return '<span class="faint">never</span>';
+  const s = (Date.now() - new Date(t)) / 1000;
+  if (s < 90) return 'just now';
+  if (s < 3600) return Math.round(s / 60) + 'm ago';
+  if (s < 86400) return Math.round(s / 3600) + 'h ago';
+  if (s < 86400 * 14) return Math.round(s / 86400) + 'd ago';
+  return new Date(t).toLocaleDateString();
+}
+const when = (t) => new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+const initials = (n) => (n || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+const name = (p) => p.display_name || p.username;
+function toast(msg, bad) { const t = $(`<div class="toast ${bad ? 'bad' : ''}">${esc(msg)}</div>`); document.body.append(t); setTimeout(() => t.remove(), 3200); }
+
+async function rpc(fn, args) {
+  if (DEMO) return demo(fn, args);
+  const { data, error } = await sb.rpc(fn, args || {});
+  if (error) throw new Error(error.message);
+  return data;
+}
+// Signed URLs for photos, fetched in batches and cached for the session.
+async function sign(paths) {
+  const need = [...new Set(paths.filter(p => p && !(p in S.urls)))];
+  if (!need.length || DEMO) return;
+  for (let i = 0; i < need.length; i += 100) {
+    const { data } = await sb.storage.from('proofs').createSignedUrls(need.slice(i, i + 100), 3600);
+    (data || []).forEach(d => { if (d.signedUrl) S.urls[d.path] = d.signedUrl; });
+  }
+}
+const img = (p) => p && S.urls[p] ? S.urls[p] : (DEMO && p ? p : '');
+const av = (p, size = 32) => `<div class="av" style="width:${size}px;height:${size}px">${img(p.avatar_path) ? `<img src="${img(p.avatar_path)}">` : esc(initials(name(p)))}</div>`;
+const visible = (list) => S.hideTest ? list.filter(p => !p.test) : list;
+
+// ---------- Shell ----------
+function shell() {
+  app.innerHTML = '';
+  const tabs = [['roster', 'Roster'], ['people', 'People'], ['sets', 'Sets'], ['posts', 'Posts'], ['circles', 'Circles'], ['missed', 'Missed days'], ['opens', 'Log-ons']];
+  const h = $(`<header><div class="bar"><span class="brand">ALIBI ADMIN</span><nav>${tabs.map(([k, l]) => `<button data-t="${k}" class="${S.tab === k ? 'on' : ''}">${l}</button>`).join('')}</nav>
+    <span class="spacer"></span>
+    <label class="muted"><input type="checkbox" id="ht" ${S.hideTest ? 'checked' : ''}> Hide test accounts</label>
+    <button class="pill" id="rf">Refresh</button>${DEMO ? '<span class="chip o">demo data</span>' : '<button class="pill" id="so">Sign out</button>'}</div></header>`);
+  h.querySelectorAll('nav button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; localStorage.setItem('alibi.tab', S.tab); shell(); });
+  h.querySelector('#ht').onchange = (e) => { S.hideTest = e.target.checked; localStorage.setItem('alibi.hideTest', S.hideTest ? '1' : '0'); render(); };
+  h.querySelector('#rf').onclick = () => load(true);
+  const so = h.querySelector('#so'); if (so) so.onclick = async () => { await sb.auth.signOut(); login(); };
+  app.append(h, $('<main id="main"></main>'));
+  render();
+}
+function render() {
+  const m = document.getElementById('main'); if (!m) return;
+  m.innerHTML = '';
+  ({ roster: renderRoster, sets: renderSets, people: renderPeople, posts: renderPosts, circles: renderCircles, missed: renderMissed, opens: renderOpens })[S.tab](m);
+}
+
+// ---------- Roster ----------
+const STATUS = { planned: ['Planned', ''], asked: ['Asked', 'warn'], confirmed: ['Confirmed', 'good'], declined: ['Declined', 'bad'] };
+const rosterGroups = () => [...new Set(S.roster.flatMap(r => r.groups.split(',').map(g => g.trim()).filter(Boolean)))].sort();
+// The roster is a spreadsheet: click a cell and type. Each change saves on its own.
+const ROSTER_COLS = 'Name,Group,Plan,Status,Alibi account,Last on,Posts 7d,Circles,Notes'.split(',');
+function renderRoster(m) {
+  const all = S.roster;
+  // Someone in several groups ("SG, New challenge") is listed under each one.
+  const groupsOf = (r) => r.groups.split(',').map(g => g.trim()).filter(Boolean);
+  const byName = (x, y) => x.name.localeCompare(y.name);
+  const sections = S.rosterGroup
+    ? [[S.rosterGroup, all.filter(r => groupsOf(r).includes(S.rosterGroup)).sort(byName)]]
+    : [...rosterGroups().map(g => [g, all.filter(r => groupsOf(r).includes(g)).sort(byName)]),
+       ['No group', all.filter(r => !groupsOf(r).length).sort(byName)]].filter(([, rs]) => rs.length);
+  const n = (f) => all.filter(f).length;
+  const head = $(`<div><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap"><div><h2>Roster</h2>
+    <p class="sub">${all.length} people · <span class="good">${n(r => r.status === 'confirmed')} confirmed</span> · <span class="warn">${n(r => r.status === 'asked')} asked</span> · ${n(r => r.user_id)} signed up · ${n(r => r.posts_7d > 0)} posted this week. Click any cell to edit; it saves by itself.</p></div>
+    <div style="display:flex;gap:8px;align-items:center"><select id="grp"><option value="">All groups</option>${rosterGroups().map(g => `<option ${S.rosterGroup === g ? 'selected' : ''}>${esc(g)}</option>`).join('')}</select><button class="pill" id="csv">Export CSV</button></div></div></div>`);
+  head.querySelector('#grp').onchange = (e) => { S.rosterGroup = e.target.value; render(); };
+
+  head.querySelector('#csv').onclick = exportRoster;
+  m.append(head);
+
+  const taken = new Set(all.map(r => r.user_id).filter(Boolean));
+  const linkCount = (id) => all.filter(r => r.user_id === id).length;
+  const realPeople = S.people.filter(p => !p.test);
+  // Unlinked names that match exactly one unlinked account's first name or username.
+  const first = (t) => (t || '').trim().toLowerCase().split(/\s+/)[0];
+  const looseAccts = realPeople.filter(p => !taken.has(p.id));
+  const suggest = (r) => {
+    if (r.user_id) return null;
+    const n = first(r.name); if (!n) return null;
+    const hits = looseAccts.filter(p => first(p.display_name) === n || p.username.toLowerCase() === n);
+    return hits.length === 1 ? hits[0] : null;
+  };
+  const suggestions = all.map(r => [r, suggest(r)]).filter(([, p]) => p);
+  if (suggestions.length) {
+    const b = $(`<div class="card" style="margin-bottom:12px;border-color:rgba(94,227,154,.5);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <span><b class="good">${suggestions.length} new sign-up${suggestions.length > 1 ? 's match names' : ' matches a name'} on your roster:</b> <span class="muted">${suggestions.map(([r, p]) => `${esc(r.name)} → @${esc(p.username)}`).join(', ')}</span></span>
+      <button class="btn g">Link all</button></div>`);
+    b.querySelector('button').onclick = async () => {
+      try {
+        for (const [r, p] of suggestions) await rpc('admin_roster_save', { p_id: r.id, p_name: r.name, p_groups: r.groups, p_plan: r.plan, p_status: r.status, p_user: p.id, p_notes: r.notes });
+        S.roster = await rpc('admin_roster'); render(); toast(`Linked ${suggestions.length}`);
+      } catch (e) { toast(e.message, true); }
+    };
+    head.append(b);
+  }
+  const sheet = $(`<div class="sheet"><table><colgroup><col style="width:34px"><col style="width:150px"><col style="width:170px"><col style="width:115px"><col style="width:125px"><col style="width:170px"><col style="width:95px"><col style="width:80px"><col style="width:240px"><col style="width:260px"><col style="width:40px"></colgroup><thead><tr><th class="rn"></th>${ROSTER_COLS.map(c => `<th>${c}</th>`).join('')}<th></th></tr></thead><tbody></tbody></table></div>`);
+  const body = sheet.querySelector('tbody');
+  let i = 0;
+  sections.forEach(([group, rs]) => {
+   if (!S.rosterGroup) body.append($(`<tr class="gh"><td colspan="${ROSTER_COLS.length + 2}">${esc(group)} <span class="faint">· ${rs.length}</span></td></tr>`));
+   rs.forEach(r => {
+    i++;
+    // Any account can be linked here, even one already on another row (same person, separate rows).
+    const acctOpts = realPeople
+      .map(p => `<option value="${p.id}" ${r.user_id === p.id ? 'selected' : ''}>@${esc(p.username)}${p.id !== r.user_id && taken.has(p.id) ? ' (on another row)' : ''}</option>`).join('');
+    const tr = $(`<tr>
+      <td class="rn">${i}</td>
+      <td><input class="cell b" data-f="name" value="${esc(r.name)}"></td>
+      <td><input class="cell" data-f="groups" list="grs" value="${esc(r.groups)}" placeholder="—" title="Separate groups with commas: SG, CS"></td>
+      <td><select class="cell" data-f="plan">${['', 'Habit', 'Challenge', 'Both'].map(x => `<option value="${x}" ${r.plan === x ? 'selected' : ''}>${x || '—'}</option>`).join('')}</select></td>
+      <td><select class="cell st ${STATUS[r.status][1]}" data-f="status">${Object.entries(STATUS).map(([k, [l]]) => `<option value="${k}" ${r.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
+      <td>${suggest(r) ? `<button class="pill lk" style="margin:4px 6px;border-color:var(--green);color:var(--green)">Link @${esc(suggest(r).username)}?</button>` : `<select class="cell ${r.user_id ? '' : 'warn'}" data-f="user_id"><option value="">Not signed up</option>${acctOpts}</select>`}</td>
+      <td class="ro">${r.user_id ? ago(r.last_seen_at) : ''}</td>
+      <td class="ro">${r.user_id ? r.posts_7d : ''}</td>
+      <td class="ro">${r.circles.map(c => `<span class="chip ${c.challenge ? 'o' : 'g'}">${esc(c.name)}</span>`).join('')}</td>
+      <td><input class="cell" data-f="notes" value="${esc(r.notes)}" placeholder="—"></td>
+      <td><button class="x del" title="Remove from roster">×</button></td></tr>`);
+    const lk = tr.querySelector('.lk');
+    if (lk) lk.onclick = async () => {
+      const p = suggest(r);
+      try { await rpc('admin_roster_save', { p_id: r.id, p_name: r.name, p_groups: r.groups, p_plan: r.plan, p_status: r.status, p_user: p.id, p_notes: r.notes }); S.roster = await rpc('admin_roster'); render(); toast(`Linked ${r.name} to @${p.username}`); }
+      catch (e) { toast(e.message, true); }
+    };
+    tr.querySelectorAll('.cell').forEach(el => {
+      const commit = async () => {
+        const f = el.dataset.f, v = el.value.trim();
+        if ((r[f] || '') === v) return;
+        if (f === 'name' && !v) { el.value = r.name; return; }
+        r[f] = v || (f === 'user_id' ? null : '');
+        if (f === 'status') el.className = 'cell st ' + STATUS[v][1];
+        el.classList.add('saving');
+        try {
+          await rpc('admin_roster_save', { p_id: r.id, p_name: r.name, p_groups: r.groups, p_plan: r.plan, p_status: r.status, p_user: r.user_id || null, p_notes: r.notes });
+          el.classList.remove('saving'); el.classList.add('saved'); setTimeout(() => el.classList.remove('saved'), 900);
+          // Account and group changes move things around, so redraw for those.
+          if (f === 'user_id' || f === 'groups') { S.roster = await rpc('admin_roster'); render(); }
+        } catch (e) { el.classList.remove('saving'); toast(e.message, true); }
+      };
+      el.tagName === 'SELECT' ? (el.onchange = commit) : (el.onblur = commit);
+      if (el.tagName === 'INPUT') el.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } if (e.key === 'Escape') { el.value = r[el.dataset.f] || ''; el.blur(); } };
+    });
+    tr.querySelector('.del').onclick = async () => {
+      if (!confirm(`Remove ${r.name} from the roster? Their Alibi account isn't touched.`)) return;
+      try { await rpc('admin_roster_delete', { p_id: r.id }); S.roster = await rpc('admin_roster'); render(); } catch (e) { toast(e.message, true); }
+    };
+    body.append(tr);
+   });
+  });
+  // The last row adds someone: type a name and press Enter.
+  const add = $(`<tr class="newrow"><td class="rn">+</td><td><input class="cell b" placeholder="Add a name…"></td><td><input class="cell" list="grs" placeholder="Group" value="${esc(S.rosterGroup)}"></td><td colspan="${ROSTER_COLS.length - 1}" class="faint">Press Enter to add</td></tr>`);
+  const [nameIn, groupIn] = add.querySelectorAll('input');
+  const create = async () => {
+    const nm = nameIn.value.trim(); if (!nm) return;
+    try {
+      await rpc('admin_roster_save', { p_id: null, p_name: nm, p_groups: groupIn.value.trim(), p_plan: '', p_status: 'planned', p_user: null, p_notes: '' });
+      S.roster = await rpc('admin_roster'); render();
+      const again = document.querySelector('.newrow input'); if (again) again.focus();
+    } catch (e) { toast(e.message, true); }
+  };
+  [nameIn, groupIn].forEach(x => x.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); create(); } });
+  body.append(add);
+  sheet.append($(`<datalist id="grs">${rosterGroups().map(g => `<option value="${esc(g)}">`).join('')}</datalist>`));
+  m.append(sheet);
+
+  // Real accounts nobody on the roster is linked to.
+  const loose = realPeople.filter(p => !taken.has(p.id));
+  if (loose.length) {
+    const box = $(`<div class="card" style="margin-top:20px"><h3>Signed up, not on the roster</h3><p class="faint" style="margin:2px 0 8px">Add them here, or pick their @username in someone's Alibi account cell.</p></div>`);
+    loose.forEach(p => {
+      const row = $(`<div class="member"><div class="who">${av(p, 26)}<span>${esc(name(p))} <span class="faint mono">@${esc(p.username)}</span> <span class="faint">· on ${ago(p.last_seen_at)}</span></span></div><button class="x">Add to roster</button></div>`);
+      row.querySelector('button').onclick = async () => {
+        try { await rpc('admin_roster_save', { p_id: null, p_name: name(p).split(' ')[0], p_groups: '', p_plan: '', p_status: 'planned', p_user: p.id, p_notes: '' }); S.roster = await rpc('admin_roster'); render(); }
+        catch (e) { toast(e.message, true); }
+      };
+      box.append(row);
+    });
+    m.append(box);
+  }
+}
+function exportRoster() {
+  const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const lines = [['Name', 'Groups', 'Plan', 'Status', 'Username', 'Last on', 'Posts this week', 'Circles', 'Notes'].map(q).join(',')]
+    .concat(S.roster.map(r => [r.name, r.groups, r.plan, STATUS[r.status][0], r.username || '', r.last_seen_at ? new Date(r.last_seen_at).toLocaleString() : '',
+                               r.user_id ? r.posts_7d : '', r.circles.map(c => c.name).join('; '), r.notes].map(q).join(',')));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
+  a.download = `alibi-roster-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+}
+
+// ---------- Challenge sets ----------
+async function renderSets(m) {
+  m.append($('<p class="muted">Loading…</p>'));
+  let data;
+  try { data = await rpc('admin_sets'); } catch (e) { m.innerHTML = `<p class="bad">${esc(e.message)}</p>`; return; }
+  m.innerHTML = '';
+  const pending = data.sets.filter(x => x.status === 'pending');
+  const head = $(`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap"><div><h2>Challenge sets</h2>
+    <p class="sub">${data.sets.filter(x => x.status === 'approved').length} live · <span class="${pending.length ? 'warn' : ''}">${pending.length} waiting for review</span> · ${data.reports.length} open reports. People pick these when they start a challenge.</p></div>
+    <button class="btn" id="ns">New set</button></div>`);
+  head.querySelector('#ns').onclick = () => editSet(null);
+  m.append(head);
+  if (data.reports.length) {
+    const r = $('<div class="card" style="margin-bottom:14px;border-color:rgba(255,59,48,.5)"><h3>Reports</h3></div>');
+    data.reports.forEach(x => r.append($(`<div class="member"><span><b>${esc(x.set)}</b> <span class="faint">· ${esc(x.reporter || '?')} · ${ago(x.created_at)}</span><br><span class="muted">${esc(x.reason || 'No reason given')}</span></span></div>`)));
+    r.append($('<p class="faint" style="font-size:12px">Approve or reject the set below to close its reports.</p>'));
+    m.append(r);
+  }
+  const wrap = $('<div class="cards"></div>');
+  data.sets.forEach(x => {
+    const status = x.status === 'pending' ? '<span class="chip warn">waiting for review</span>' : x.status === 'rejected' ? '<span class="chip bad">rejected</span>' : '<span class="chip g">live</span>';
+    const c = $(`<div class="card" style="${x.status === 'pending' ? 'border-color:var(--gold)' : ''}">
+      <div style="display:flex;justify-content:space-between;gap:8px"><h3>${esc(x.emoji)} ${esc(x.title)}</h3><span>${x.official ? '<span class="chip o">official</span>' : ''}${status}</span></div>
+      <div class="faint">${x.task_count} tasks · by ${esc(x.author || '?')} · ${ago(x.created_at)}${x.open_reports ? ` · <span class="bad">${x.open_reports} report${x.open_reports > 1 ? 's' : ''}</span>` : ''}</div>
+      <div class="faint" style="margin:4px 0 8px">used ${x.uses}× · ${x.likes} 👍 ${x.dislikes} 👎${x.done_rate != null ? ` · tasks done ${x.done_rate}% of the time` : ''}</div>
+      ${x.description ? `<p class="muted" style="margin:0 0 8px">${esc(x.description)}</p>` : ''}
+      <ol style="margin:0 0 10px;padding-left:18px">${x.tasks.map(t => `<li>${esc(t.title)} <span class="faint">· ${DIFF[t.difficulty]}</span></li>`).join('')}</ol>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${x.status !== 'approved' ? '<button class="btn g ap">Approve</button>' : ''}${x.status !== 'rejected' ? '<button class="x rj">Reject</button>' : ''}<button class="pill ed">Edit</button><button class="x dl">Delete</button></div></div>`);
+    const act = async (fn, args, msg) => { try { await rpc(fn, args); toast(msg); render(); } catch (e) { toast(e.message, true); } };
+    const ap = c.querySelector('.ap'), rj = c.querySelector('.rj');
+    if (ap) ap.onclick = () => act('admin_review_set', { p_set: x.id, p_status: 'approved' }, 'Approved. It\'s live.');
+    if (rj) rj.onclick = () => act('admin_review_set', { p_set: x.id, p_status: 'rejected' }, 'Rejected');
+    c.querySelector('.ed').onclick = () => editSet(x);
+    c.querySelector('.dl').onclick = () => { if (confirm(`Delete "${x.title}" for good?`)) act('admin_delete_set', { p_set: x.id }, 'Deleted'); };
+    wrap.append(c);
+  });
+  m.append(wrap);
+  // How each task-list task does: dealt vs done. Switch off the ones nobody does.
+  const stats = $(`<div class="card" style="margin-top:18px"><h3>Task list: what people actually do</h3><p class="faint" style="margin:2px 0 8px">Dealt = how often it landed on a board. Done = how often someone proved it. Random picks already favour tasks that get done; switch off any that shouldn't come up at all.</p>
+    <table><thead><tr><th>Task</th><th>Level</th><th>Dealt</th><th>Done</th><th>Rate</th><th></th></tr></thead><tbody></tbody></table></div>`);
+  data.task_stats.forEach(t => {
+    const rate = t.dealt ? Math.round(100 * t.taken / t.dealt) : null;
+    const tr = $(`<tr style="${t.active ? '' : 'opacity:.45'}"><td>${esc(t.title)}</td><td>${DIFF[t.difficulty]}</td><td>${t.dealt}</td><td>${t.taken}</td><td class="${rate === null ? 'faint' : rate >= 30 ? 'good' : rate < 10 && t.dealt >= 5 ? 'bad' : ''}">${rate === null ? '–' : rate + '%'}</td>
+      <td><button class="x">${t.active ? 'Switch off' : 'Switch on'}</button></td></tr>`);
+    tr.querySelector('button').onclick = async () => { try { await rpc('admin_task_active', { p_title: t.title, p_active: !t.active }); render(); } catch (e) { toast(e.message, true); } };
+    stats.querySelector('tbody').append(tr);
+  });
+  m.append(stats);
+}
+function editSet(x) {
+  const [d, close] = drawer(`<form><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">${x ? 'Edit set' : 'New set'}</h2><button type="button" class="x" data-close>Close</button></div>
+    <p class="sub" style="margin-top:6px">Your sets go live straight away${x ? '' : ' as official'}.</p>
+    <div style="display:flex;gap:8px">${field('Name', `<input type="text" id="nm" maxlength="40" value="${esc(x ? x.title : '')}" required style="width:100%">`)}${field('Icon', `<input type="text" id="em" maxlength="4" value="${esc(x ? x.emoji : '🎯')}" style="width:64px;text-align:center">`)}</div>
+    ${field('Description (optional)', `<input type="text" id="ds" maxlength="140" value="${esc(x ? x.description : '')}" style="width:100%">`)}
+    ${field('Tasks', '<div id="te"></div>', 'At least 4. Each one provable with one photo.')}
+    ${toggle('of', x ? x.official : true, 'Show the Alibi badge (official)')}
+    <div class="err" id="er"></div><button class="btn" type="submit" style="width:100%;padding:11px;margin-top:10px">Save set</button></form>`);
+  const [te, tasks] = taskEditor(x ? x.tasks : []); d.querySelector('#te').append(te);
+  d.querySelector('form').onsubmit = async (e) => {
+    e.preventDefault();
+    const er = d.querySelector('#er');
+    if (tasks.length < 4) { er.textContent = 'Add at least 4 tasks.'; return; }
+    try {
+      await rpc('admin_save_set', { p_set: x ? x.id : null, p_title: d.querySelector('#nm').value.trim(), p_emoji: d.querySelector('#em').value.trim(),
+        p_description: d.querySelector('#ds').value.trim(), p_tasks: tasks, p_official: d.querySelector('#of').checked });
+      toast('Saved'); close(); render();
+    } catch (x2) { er.textContent = x2.message; }
+  };
+}
+
+// ---------- People ----------
+function renderPeople(m) {
+  const list = visible(S.people);
+  m.append($(`<div><h2>People</h2><p class="sub">${list.length} people. Click someone for their log-ons, posts and circles.</p></div>`));
+  const t = $(`<table><thead><tr><th>Person</th><th>Last on</th><th class="hide-sm">Opens 7d</th><th class="hide-sm">Days on 7d</th><th>Posts 7d</th><th class="hide-sm">Last post</th><th>Circles</th><th class="hide-sm">Build</th></tr></thead><tbody></tbody></table>`);
+  list.forEach(p => {
+    const r = $(`<tr class="click"><td><div class="who">${av(p)}<div><b>${esc(name(p))}</b>${p.test ? '<span class="tag">test</span>' : ''}<div class="faint mono">@${esc(p.username)}</div></div></div></td>
+      <td>${ago(p.last_seen_at)}</td><td class="hide-sm">${p.opens_7d}</td><td class="hide-sm">${p.days_on_7d}/7</td>
+      <td><b>${p.proofs_7d}</b> <span class="faint">/ ${p.proofs}</span></td><td class="hide-sm">${ago(p.last_post_at)}</td>
+      <td>${p.circles.map(c => `<span class="chip ${c.challenge ? 'o' : 'g'}">${esc(c.name)}</span>`).join('') || '<span class="faint">none</span>'}</td>
+      <td class="hide-sm mono faint">${esc(p.app_build || '')}</td></tr>`);
+    r.onclick = () => person(p);
+    t.querySelector('tbody').append(r);
+  });
+  m.append(t);
+}
+
+async function person(p) {
+  const scrim = $('<div class="scrim"></div>'), d = $('<div class="drawer"><p class="muted">Loading…</p></div>');
+  const close = () => { scrim.remove(); d.remove(); };
+  scrim.onclick = close; document.body.append(scrim, d);
+  try {
+    const [opens, posts] = await Promise.all([rpc('admin_opens', { p_user: p.id, p_days: 30 }), rpc('admin_posts', { p_user: p.id, p_limit: 30 })]);
+    await sign([p.avatar_path, ...posts.map(x => x.image_path || x.backup_image_path)]);
+    const others = S.circles.filter(c => !c.members.some(m => m.id === p.id));
+    d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div class="who">${av(p, 56)}<div><h2 style="margin:0">${esc(name(p))}</h2><div class="faint mono">@${esc(p.username)} · joined ${new Date(p.created_at).toLocaleDateString()}</div></div></div><button class="x" id="cl">Close</button></div>
+      <div class="stats"><div class="stat"><b>${ago(p.last_seen_at)}</b><span class="faint">last on</span></div><div class="stat"><b>${p.opens_7d}</b><span class="faint">opens, 7 days</span></div>
+      <div class="stat"><b>${p.days_on_7d}/7</b><span class="faint">days on</span></div><div class="stat"><b>${p.proofs_7d}</b><span class="faint">posts, 7 days</span></div></div>
+      <label class="muted" style="display:block;margin:12px 0"><input type="checkbox" id="tst" ${p.test ? 'checked' : ''}> Test account <span class="faint">(left out of set and task stats)</span></label>
+      <h3>Circles</h3><div id="pc"></div>
+      <div class="add"><select id="addc"><option value="">Add to a circle…</option>${others.map(c => `<option value="${c.id}">${esc(c.name)} (${c.members.length})</option>`).join('')}</select><button class="btn g" id="addb">Add</button></div>
+      <h3 style="margin-top:22px">Log-ons, last 30 days <span class="faint">(${opens.length})</span></h3>
+      <div>${opens.length ? opens.slice(0, 60).map(o => `<div class="open"><span class="t mono">${new Date(o.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span><span>${new Date(o.at).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}</span><span class="faint mono">${esc(o.build || '')}</span></div>`).join('') : '<p class="faint">No log-ons recorded yet. Logging started Oct 24.</p>'}</div>
+      <h3 style="margin-top:22px">Posts</h3><div class="thumbs">${posts.map(x => `<div title="${esc(x.habit || x.task || '')}">${img(x.image_path || x.backup_image_path) ? `<img src="${img(x.image_path || x.backup_image_path)}">` : ''}</div>`).join('') || '<p class="faint">No posts yet.</p>'}</div>`;
+    d.querySelector('#cl').onclick = close;
+    d.querySelector('#tst').onchange = async (e) => {
+      try { await rpc('admin_set_test', { p_user: p.id, p_test: e.target.checked }); p.test = e.target.checked; toast(p.test ? `${name(p)} is a test account` : `${name(p)} counts as a real person`); await load(); }
+      catch (err) { e.target.checked = !e.target.checked; toast(err.message, true); }
+    };
+    const pc = d.querySelector('#pc');
+    p.circles.forEach(c => {
+      const row = $(`<div class="member"><span><span class="chip ${c.challenge ? 'o' : 'g'}">${c.challenge ? 'Challenge' : 'Habit'}</span> ${esc(c.name)}</span><button class="x">Remove</button></div>`);
+      row.querySelector('button').onclick = () => removeMember(c.id, p, close);
+      pc.append(row);
+    });
+    if (!p.circles.length) pc.append($('<p class="faint">Not in any circles.</p>'));
+    d.querySelector('#addb').onclick = () => { const cid = d.querySelector('#addc').value; if (cid) addMember(cid, p, close); };
+  } catch (e) { d.innerHTML = `<p class="bad">${esc(e.message)}</p>`; }
+}
+
+async function addMember(cid, p, done) {
+  const c = S.circles.find(x => x.id === cid);
+  if (!confirm(`Add ${name(p)} to ${c ? c.name : 'this circle'}? They'll get a notification.`)) return;
+  try { await rpc('admin_add_member', { p_circle: cid, p_user: p.id }); toast(`Added ${name(p)}`); done && done(); await load(); }
+  catch (e) { toast(e.message, true); }
+}
+async function removeMember(cid, p, done) {
+  const c = S.circles.find(x => x.id === cid);
+  if (!confirm(`Take ${name(p)} out of ${c ? c.name : 'this circle'}? Their habit there is archived; you can add them back.`)) return;
+  try { await rpc('admin_remove_member', { p_circle: cid, p_user: p.id }); toast(`Removed ${name(p)}`); done && done(); await load(); }
+  catch (e) { toast(e.message, true); }
+}
+
+// ---------- Posts ----------
+async function loadPosts(reset) {
+  const f = S.postFilter;
+  const before = reset ? null : (S.posts.at(-1) || {}).created_at;
+  const page = await rpc('admin_posts', { p_user: f.user || null, p_circle: f.circle || null, p_before: before || null, p_limit: 60 });
+  await sign(page.flatMap(x => [x.image_path, x.backup_image_path]));
+  S.posts = reset ? page : S.posts.concat(page);
+  S.morePosts = page.length === 60;
+}
+function renderPosts(m) {
+  const people = visible(S.people);
+  const top = $(`<div><h2>Posts</h2><p class="sub">Every post, newest first. Click a photo to open it.</p>
+    <div class="filters"><select id="fu"><option value="">Everyone</option>${people.map(p => `<option value="${p.id}" ${S.postFilter.user === p.id ? 'selected' : ''}>${esc(name(p))}</option>`).join('')}</select>
+    <select id="fc"><option value="">All circles</option>${S.circles.map(c => `<option value="${c.id}" ${S.postFilter.circle === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div></div>`);
+  const refilter = async () => { S.postFilter = { user: top.querySelector('#fu').value, circle: top.querySelector('#fc').value }; await loadPosts(true); render(); };
+  top.querySelector('#fu').onchange = refilter; top.querySelector('#fc').onchange = refilter;
+  m.append(top);
+  const ids = new Set(people.map(p => p.id));
+  const posts = S.posts.filter(x => !S.hideTest || ids.has(x.author_id));
+  const g = $('<div class="grid"></div>');
+  posts.forEach(x => {
+    const src = img(x.image_path || x.backup_image_path);
+    const c = $(`<div class="post"><div class="ph">${src ? `<img src="${src}" loading="lazy">` : '<span>no photo</span>'}${x.voided_at ? '<span class="void">VOIDED</span>' : ''}${x.video_path ? '<span class="vid">▶ video</span>' : ''}</div>
+      <div class="meta"><b>${esc(x.display_name || x.username)}</b> <span class="faint">· ${esc(x.task || x.habit || '')}</span>
+      <div class="faint">${esc(x.circle || 'no circle')} · ${when(x.created_at)}</div>
+      ${x.caption ? `<div style="margin-top:4px">${esc(x.caption)}</div>` : ''}
+      <div class="faint" style="margin-top:4px">${x.vouches} vouch${x.vouches === 1 ? '' : 'es'}${x.doubts ? ` · <span class="bad">${x.doubts} doubt${x.doubts === 1 ? '' : 's'}</span>` : ''}</div></div></div>`);
+    c.querySelector('.ph').onclick = async () => {
+      let url = src;
+      if (x.video_path && !DEMO) { await sign([x.video_path]); url = S.urls[x.video_path]; }
+      if (!url) return;
+      const lb = $(`<div class="lightbox">${x.video_path && !DEMO ? `<video src="${url}" controls autoplay></video>` : `<img src="${url}">`}</div>`);
+      lb.onclick = (e) => { if (e.target === lb) lb.remove(); };
+      document.body.append(lb);
+    };
+    g.append(c);
+  });
+  m.append(g);
+  if (!posts.length) m.append($('<p class="faint">No posts.</p>'));
+  if (S.morePosts) { const b = $('<button class="pill more">Load more</button>'); b.onclick = async () => { await loadPosts(false); render(); }; m.append(b); }
+}
+
+// ---------- Circles ----------
+function renderCircles(m) {
+  const head = $(`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><h2>Circles</h2><p class="sub">${S.circles.length} circles. Add or remove people here; added people get a notification.</p></div><button class="btn">New circle</button></div>`);
+  head.querySelector('button').onclick = newCircle;
+  m.append(head);
+  const people = visible(S.people);
+  const wrap = $('<div class="cards"></div>');
+  S.circles.forEach(c => {
+    const out = people.filter(p => !c.members.some(x => x.id === p.id));
+    const card = $(`<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><div><h3>${esc(c.name)}</h3>
+      <div class="faint">${c.challenge ? 'Challenge' : `Habit: ${esc(c.habit_name || '')} · ${howOften(c)}`}</div></div>
+      <div style="text-align:right"><span class="chip ${c.challenge ? 'o' : 'g'}">${c.members.length} people</span><div class="faint mono">${esc(c.invite_code)}</div></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 0 8px"><span class="faint">${c.posts_7d} posts this week · run by ${esc(c.creator || '?')}</span><span><button class="pill pin" title="${c.pinned_at ? 'Unpin' : 'Pin to the top'}" style="${c.pinned_at ? 'border-color:var(--orange);color:var(--orange)' : ''}">${c.pinned_at ? '★ Pinned' : '☆ Pin'}</button> <button class="pill set">Settings</button></span></div><div class="mem"></div>
+      <div class="add"><select><option value="">Add someone…</option>${out.map(p => `<option value="${p.id}">${esc(name(p))}</option>`).join('')}</select><button class="btn g">Add</button></div></div>`);
+    const mem = card.querySelector('.mem');
+    c.members.forEach(x => {
+      const p = S.people.find(y => y.id === x.id) || x;
+      const row = $(`<div class="member"><div class="who">${av(p, 26)}<span>${esc(name(p))}</span></div><button class="x">Remove</button></div>`);
+      row.querySelector('button').onclick = () => removeMember(c.id, p);
+      mem.append(row);
+    });
+    card.querySelector('.set').onclick = () => editCircle(c.id);
+    card.querySelector('.pin').onclick = async () => {
+      try { await rpc('admin_pin_circle', { p_circle: c.id, p_pinned: !c.pinned_at }); S.circles = await rpc('admin_circles'); render(); }
+      catch (e) { toast(e.message, true); }
+    };
+    if (c.pinned_at) card.style.borderColor = 'rgba(255,107,46,.45)';
+    card.querySelector('.add button').onclick = () => { const uid = card.querySelector('.add select').value; const p = S.people.find(y => y.id === uid); if (p) addMember(c.id, p); };
+    wrap.append(card);
+  });
+  m.append(wrap);
+}
+
+// ---------- Circle settings (new and existing) ----------
+const DIFF = ['', 'Easy', 'Medium', 'Hard'];
+const LENGTHS = [[7, '1 week'], [14, '2 weeks'], [30, '1 month']];
+function field(label, inner, hint) { return `<div style="margin-bottom:14px"><label class="muted">${label}</label><div style="margin-top:4px">${inner}</div>${hint ? `<div class="faint" style="font-size:12px;margin-top:3px">${hint}</div>` : ''}</div>`; }
+function toggle(id, on, label) { return `<label class="who" style="cursor:pointer;margin:6px 0"><input type="checkbox" id="${id}" ${on ? 'checked' : ''}> ${label}</label>`; }
+function lengthSelect(days) {
+  const known = LENGTHS.some(([d]) => d === days);
+  return `<select id="ln">${LENGTHS.map(([d, l]) => `<option value="${d}" ${d === days ? 'selected' : ''}>${l}</option>`).join('')}<option value="custom" ${known ? '' : 'selected'}>Custom</option></select>
+    <input type="text" id="lnc" value="${known ? '' : days}" placeholder="days, 3–90" style="width:110px;margin-left:6px;${known ? 'display:none' : ''}">`;
+}
+function readLength(d) { const v = d.querySelector('#ln').value; return v === 'custom' ? Math.max(3, Math.min(90, +d.querySelector('#lnc').value || 7)) : +v; }
+function wireLength(d) { const ln = d.querySelector('#ln'); ln.onchange = () => d.querySelector('#lnc').style.display = ln.value === 'custom' ? '' : 'none'; }
+function drawer(html) {
+  const scrim = $('<div class="scrim"></div>'), d = $(`<div class="drawer">${html}</div>`);
+  const close = () => { scrim.remove(); d.remove(); };
+  scrim.onclick = close; document.body.append(scrim, d);
+  d.querySelectorAll('[data-close]').forEach(b => b.onclick = close);
+  return [d, close];
+}
+function challengeFields(o, cats) {
+  return field('How long it runs', lengthSelect(o.challenge_days || 7))
+    + field('Tasks on the board', `<select id="src"><option value="mixed" ${o.task_source === 'mixed' ? 'selected' : ''}>Mix of Alibi's list and your own</option><option value="own" ${o.task_source === 'own' ? 'selected' : ''}>Only your own tasks</option><option value="library" ${o.task_source === 'library' ? 'selected' : ''}>Only Alibi's list</option></select>`)
+    + field('Categories from Alibi\'s list', `<div id="cats">${cats.map(c => `<label class="chip" style="cursor:pointer"><input type="checkbox" value="${c}" ${(o.categories || []).includes(c) ? 'checked' : ''}> ${c.replace('_', ' ')}</label>`).join('')}</div>`, 'None ticked = all of them.')
+    + field('Stakes', `<input type="text" id="sw" placeholder="Winner gets… (picks dinner)" value="${esc(o.stake_winner || '')}" style="width:100%;margin-bottom:6px"><input type="text" id="st" placeholder="Top 3 get… (optional)" value="${esc(o.stake_top3 || '')}" style="width:100%;margin-bottom:6px"><input type="text" id="sl" placeholder="Last place owes… (buys coffee)" value="${esc(o.stake_loser || '')}" style="width:100%">`)
+    + field('Rules', toggle('dr', o.drops_enabled !== false, 'Bonus drops (surprise double-point tasks)') + toggle('sp', o.swaps_enabled !== false, 'One task swap per board') + toggle('ms', o.members_can_suggest !== false, 'Members can suggest tasks (the owner approves them)')
+      + `<div class="who" style="margin-top:6px">Wait between tasks <select id="cdm">${[0, 30, 60, 120, 240].map(m => `<option value="${m}" ${(o.cooldown_minutes ?? 120) === m ? 'selected' : ''}>${m ? (m < 60 ? m + ' min' : m / 60 + ' h') : 'none'}</option>`).join('')}</select></div>`);
+}
+function readChallenge(d) {
+  return { challenge_days: readLength(d), task_source: d.querySelector('#src').value,
+    categories: [...d.querySelectorAll('#cats input:checked')].map(x => x.value),
+    stake_winner: d.querySelector('#sw').value.trim(), stake_top3: d.querySelector('#st').value.trim(), stake_loser: d.querySelector('#sl').value.trim(),
+    drops_enabled: d.querySelector('#dr').checked, swaps_enabled: d.querySelector('#sp').checked, members_can_suggest: d.querySelector('#ms').checked,
+    cooldown_minutes: +d.querySelector('#cdm').value };
+}
+function habitFields(o) {
+  const days = o.cadence === 'daily' ? 7 : (o.weekly_target || 3);
+  return field('The habit everyone does', `<input type="text" id="hn" maxlength="60" value="${esc(o.habit_name || '')}" placeholder="Lift" style="width:100%">`)
+    + field('How often, to start', `<input type="number" id="pd" min="1" max="10" value="${o.per_day || 1}" style="width:64px"> time(s) a day, on <input type="number" id="dw" min="1" max="7" value="${days}" style="width:64px"> day(s) a week`,
+            '7 days a week is every day. A day counts once all its posts are in. Each person can change how often they do it.');
+}
+function readHabit(d) {
+  const n = (id, lo, hi) => Math.min(hi, Math.max(lo, Math.round(+d.querySelector(id).value || lo)));
+  const days = n('#dw', 1, 7), perDay = n('#pd', 1, 10);
+  return { habit: d.querySelector('#hn').value.trim(), cadence: days === 7 ? 'daily' : 'weekly', weekly_target: days, per_day: perDay };
+}
+const howOften = (o) => `${(o.per_day || 1) > 1 ? o.per_day + 'x a day, ' : ''}${o.cadence === 'weekly' ? o.weekly_target + (o.per_day > 1 ? ' days' : 'x') + ' a week' : 'every day'}`;
+// Own tasks typed while creating: one per line, with a difficulty.
+function taskEditor(initial = []) {
+  const box = $(`<div><div id="tl"></div><div class="add"><input type="text" id="tt" placeholder="A task you can prove with a photo" style="flex:1;min-width:0"><select id="td" style="flex:none;width:100px"><option value="1">Easy</option><option value="2" selected>Medium</option><option value="3">Hard</option></select><button type="button" class="btn g" id="ta">Add</button></div></div>`);
+  const tasks = initial.map(t => ({ title: t.title, difficulty: t.difficulty }));
+  const draw = () => { box.querySelector('#tl').innerHTML = ''; tasks.forEach((t, i) => { const r = $(`<div class="member"><span>${esc(t.title)} <span class="faint">· ${DIFF[t.difficulty]}</span></span><button type="button" class="x">Remove</button></div>`); r.querySelector('button').onclick = () => { tasks.splice(i, 1); draw(); }; box.querySelector('#tl').append(r); }); };
+  const add = () => { const t = box.querySelector('#tt').value.trim(); if (t.length < 3) return; tasks.push({ title: t, difficulty: +box.querySelector('#td').value }); box.querySelector('#tt').value = ''; draw(); box.querySelector('#tt').focus(); };
+  box.querySelector('#ta').onclick = add;
+  draw();
+  box.querySelector('#tt').onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } };
+  return [box, tasks];
+}
+
+// New circle: you're not in it. One of the group owns it (it's their circle in the app).
+async function newCircle() {
+  const people = visible(S.people);
+  let cats = [];
+  try { cats = DEMO ? ['fitness', 'food', 'outdoors', 'social'] : (await sb.from('task_library').select('category')).data.map(x => x.category); } catch (_) {}
+  cats = [...new Set(cats)].sort();
+  if (!cats.length) cats = ['chaos', 'comfort_zone', 'creative', 'fitness', 'food', 'life', 'mind', 'outdoors', 'social'];
+  const [d, close] = drawer(`<form><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">New circle</h2><button type="button" class="x" data-close>Close</button></div>
+    <p class="sub" style="margin-top:6px">You won't be in it. The owner runs it in the app; you can change anything here later.</p>
+    <div style="display:flex;gap:8px">${field('Name', '<input type="text" id="nm" maxlength="40" placeholder="DC accountability" required style="width:100%">')}${field('Icon', '<input type="text" id="em" maxlength="4" placeholder="🔥" style="width:64px;text-align:center">')}</div>
+    ${field('Type', '<label class="chip g"><input type="radio" name="ty" value="habit" checked> Habit</label><label class="chip o"><input type="radio" name="ty" value="challenge"> Challenge</label>')}
+    <div id="hb">${habitFields({})}</div>
+    <div id="ch" style="display:none">${challengeFields({ task_source: 'mixed' }, cats)}<div id="own">${field('Your own tasks', '<div id="te"></div>', 'They go in the pool and get dealt onto the board.')}</div></div>
+    ${field('People. Pick one owner.', '<div id="pp"></div>')}
+    <div class="err" id="er"></div><button class="btn" type="submit" style="width:100%;padding:11px">Create circle</button></form>`);
+  const [te, tasks] = taskEditor(); d.querySelector('#te').append(te);
+  wireLength(d);
+  d.querySelectorAll('input[name=ty]').forEach(r => r.onchange = () => {
+    const ch = d.querySelector('input[name=ty]:checked').value === 'challenge';
+    d.querySelector('#hb').style.display = ch ? 'none' : ''; d.querySelector('#ch').style.display = ch ? '' : 'none';
+  });
+  d.querySelector('#src').onchange = (e) => d.querySelector('#own').style.display = e.target.value === 'library' ? 'none' : '';
+  const pp = d.querySelector('#pp');
+  people.forEach(p => pp.append($(`<div class="member"><label class="who" style="cursor:pointer"><input type="checkbox" value="${p.id}"> ${av(p, 24)}<span>${esc(name(p))} <span class="faint mono">@${esc(p.username)}</span></span></label>
+    <label class="faint"><input type="radio" name="ow" value="${p.id}"> owner</label></div>`)));
+  pp.querySelectorAll('input[name=ow]').forEach(r => r.onchange = () => { const cb = pp.querySelector(`input[type=checkbox][value="${r.value}"]`); if (cb) cb.checked = true; });
+  d.querySelector('form').onsubmit = async (e) => {
+    e.preventDefault();
+    const er = d.querySelector('#er'), btn = d.querySelector('button[type=submit]');
+    const members = [...pp.querySelectorAll('input[type=checkbox]:checked')].map(x => x.value);
+    const owner = (pp.querySelector('input[name=ow]:checked') || {}).value || members[0];
+    const challenge = d.querySelector('input[name=ty]:checked').value === 'challenge';
+    if (!owner) { er.textContent = 'Pick at least one person.'; return; }
+    const opts = { name: d.querySelector('#nm').value.trim(), emoji: d.querySelector('#em').value.trim(), challenge };
+    if (challenge) {
+      Object.assign(opts, readChallenge(d), { tasks });
+      if (opts.task_source === 'own' && tasks.length < 4) { er.textContent = 'With only your own tasks, add at least 4 (a board needs them).'; return; }
+    } else {
+      Object.assign(opts, readHabit(d));
+      if (!opts.habit) { er.textContent = 'Say what everyone will do (like Lift).'; return; }
+    }
+    btn.disabled = true; er.textContent = '';
+    try { await rpc('admin_create_circle_full', { p_owner: owner, p_members: members, p_opts: opts }); toast('Circle created'); close(); await load(); }
+    catch (x) { er.textContent = x.message; btn.disabled = false; }
+  };
+}
+
+// The board: every square on the live and next board, and any change to any of them.
+async function drawBoards(circleId, box) {
+  let boards;
+  try { boards = await rpc('admin_boards', { p_circle: circleId }); } catch (e) { box.innerHTML = `<h3>Board</h3><p class="bad">${esc(e.message)}</p>`; return; }
+  await sign(boards.flatMap(b => b.squares.map(q => q.image_path)));
+  const pick = box.dataset.board && boards.find(b => b.id === box.dataset.board) ? box.dataset.board : (boards.filter(b => b.live).pop() || boards[0] || {}).id;
+  const b = boards.find(x => x.id === pick);
+  const bact = async (action, args, msg) => {
+    try { await rpc('admin_board_action', { p_action: action, p_args: args }); toast(msg || 'Saved'); box.dataset.board = pick; await drawBoards(circleId, box); }
+    catch (e) { toast(e.message, true); }
+  };
+  const when = (t) => new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric' });
+  box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">Board</h3>
+    <div>${boards.map(x => `<button class="pill bt ${x.id === pick ? '' : 'faint'}" data-id="${x.id}" style="${x.id === pick ? 'border-color:var(--orange)' : ''}">${x.live ? 'Live' : 'Next'} · ${when(x.starts_at)}–${when(x.ends_at)}</button>`).join(' ')}</div></div>`;
+  box.querySelectorAll('.bt').forEach(x => x.onclick = () => { box.dataset.board = x.dataset.id; drawBoards(circleId, box); });
+  if (!b) { box.append($('<p class="faint">No board right now.</p>')); return; }
+  const grid = b.squares.filter(q => q.pos !== null), extra = b.squares.filter(q => q.pos === null);
+  // When this board runs. The next board always starts the moment this one ends.
+  const local = (t) => { const d = new Date(t); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
+  const dates = $(`<div class="card" style="margin:10px 0;background:var(--surface2)"><b>Dates</b>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;align-items:end">
+      <label class="muted">Starts<br><input type="datetime-local" id="ds" value="${local(b.starts_at)}"></label>
+      <label class="muted">Ends<br><input type="datetime-local" id="de" value="${local(b.ends_at)}"></label>
+      <button class="btn" id="dsv">Save dates</button></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+      <button class="pill dq" data-h="-24">End 1 day sooner</button><button class="pill dq" data-h="24">+1 day</button><button class="pill dq" data-h="168">+1 week</button>
+      ${b.live ? '<button class="x" id="dnow">End now</button>' : ''}</div>
+    <p class="faint" style="font-size:12px;margin:6px 0 0">The next board starts the moment this one ends. Ending now starts the next board now, and the wrap goes out about 2 hours later.</p></div>`);
+  const saveDates = async (start, end, msg) => {
+    try { await rpc('admin_board_dates', { p_board: b.id, p_starts_at: start.toISOString(), p_ends_at: end.toISOString() }); toast(msg || 'Dates saved'); box.dataset.board = b.live && end <= new Date() ? '' : pick; await drawBoards(circleId, box); }
+    catch (e) { toast(e.message, true); }
+  };
+  dates.querySelector('#dsv').onclick = () => saveDates(new Date(dates.querySelector('#ds').value), new Date(dates.querySelector('#de').value));
+  dates.querySelectorAll('.dq').forEach(q => q.onclick = () => saveDates(new Date(b.starts_at), new Date(new Date(b.ends_at).getTime() + (+q.dataset.h) * 3600e3)));
+  const dn = dates.querySelector('#dnow');
+  if (dn) dn.onclick = () => { if (confirm('End this board now? The next one starts right away and everyone gets the wrap.')) saveDates(new Date(b.starts_at), new Date(), 'Ended. The next board is live.'); };
+  box.append(dates);
+  if (b.scores.length) box.append($(`<p class="faint" style="margin:8px 0">${b.scores.map(s => `${esc(s.name)} <b style="color:var(--chalk)">${s.points}</b>`).join(' · ')}</p>`));
+  const g = $(`<div style="display:grid;grid-template-columns:repeat(${b.size},1fr);gap:6px;margin:10px 0"></div>`);
+  const ed = $('<div></div>');
+  const cell = (q) => {
+    const pic = img(q.image_path);
+    const el = $(`<button type="button" style="aspect-ratio:1;border-radius:10px;border:1px solid ${q.completed_by ? 'var(--orange)' : 'var(--line)'};background:${pic ? `center/cover url('${pic}')` : 'var(--surface2)'};padding:6px;text-align:left;cursor:pointer;position:relative;overflow:hidden;color:var(--chalk);font:inherit">
+      <span style="position:absolute;inset:0;background:${pic ? 'linear-gradient(transparent,rgba(0,0,0,.8))' : 'none'}"></span>
+      <span style="position:relative;display:flex;flex-direction:column;height:100%;justify-content:space-between">
+        <span class="mono" style="font-size:10px;color:${['', 'var(--green)', 'var(--gold)', 'var(--orange)'][q.difficulty]}">${q.points}</span>
+        <span style="font-size:11px;line-height:1.2;font-weight:600">${esc(q.title)}</span>
+        <span class="faint" style="font-size:10px">${q.taker ? esc(q.taker) : 'open'}</span></span></button>`);
+    el.onclick = () => edit(q);
+    return el;
+  };
+  const edit = (q) => {
+    ed.innerHTML = `<div class="card" style="margin-top:8px;background:var(--surface2)"><div style="display:flex;justify-content:space-between"><b>${q.is_drop ? 'Bonus drop' : q.is_extra ? 'Extra task' : 'Square ' + (q.pos + 1)}</b><span class="faint">${q.taker ? `taken by ${esc(q.taker)}` : 'open'}${q.for ? ` · dare for ${esc(q.for)}` : ''}</span></div>
+      <div class="add"><input type="text" id="qt" value="${esc(q.title)}" style="flex:1;min-width:0"><select id="qd" style="flex:none;width:100px">${[1, 2, 3].map(x => `<option value="${x}" ${q.difficulty === x ? 'selected' : ''}>${DIFF[x]}</option>`).join('')}</select><button class="btn" id="qs">Save</button></div>
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        ${q.proof_id ? '<button class="pill" id="qo">Reopen (take it off them)</button>' : '<button class="pill" id="qr">Reroll: random new task</button>'}
+        ${q.pos === null ? '<button class="x" id="qx">Remove</button>' : ''}</div>
+      ${q.proof_id ? '<p class="faint" style="font-size:12px;margin:6px 0 0">Reopening keeps their post but takes the points back, and the circle is told it\'s open again.</p>' : ''}</div>`;
+    ed.scrollIntoView({ behavior: 'smooth', block: 'center' }); ed.querySelector('#qt').focus();
+    ed.querySelector('#qs').onclick = () => bact('edit', { square: q.id, title: ed.querySelector('#qt').value.trim(), difficulty: +ed.querySelector('#qd').value });
+    const qr = ed.querySelector('#qr'), qo = ed.querySelector('#qo'), qx = ed.querySelector('#qx');
+    if (qr) qr.onclick = () => bact('reroll', { square: q.id }, 'Rerolled');
+    if (qo) qo.onclick = () => { if (confirm(`Take "${q.title}" off ${q.taker}? Their points for it go.`)) bact('reopen', { square: q.id }, 'Reopened'); };
+    if (qx) qx.onclick = () => { if (confirm(`Remove "${q.title}"?`)) bact('remove', { square: q.id }, 'Removed'); };
+  };
+  grid.forEach(q => g.append(cell(q)));
+  box.append(g);
+  if (extra.length) {
+    box.append($('<p class="muted" style="margin:10px 0 4px">Drops and extras</p>'));
+    const ex = $(`<div style="display:grid;grid-template-columns:repeat(${b.size},1fr);gap:6px"></div>`);
+    extra.forEach(q => { const c = cell(q); c.title = q.is_drop ? `Drop · ${new Date(q.drops_at) > new Date() ? 'drops ' + new Date(q.drops_at).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }) : 'until ' + new Date(q.expires_at).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' })}` : 'Extra'; ex.append(c); });
+    box.append(ex);
+  }
+  box.append(ed);
+  const tools = $(`<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+    <button class="pill" id="ro">Reroll every open square</button>
+    ${b.live ? `<div class="add" style="margin-top:10px"><input type="text" id="dt" placeholder="Bonus drop right now: a task worth double" style="flex:1;min-width:0"><select id="dd" style="flex:none;width:100px"><option value="1">Easy</option><option value="2" selected>Medium</option><option value="3">Hard</option></select><select id="dh" style="flex:none;width:90px"><option value="3">3 h</option><option value="6">6 h</option><option value="24" selected>24 h</option></select><button class="btn" id="db">Drop</button></div>` : ''}</div>`);
+  tools.querySelector('#ro').onclick = () => { if (confirm('Swap every untaken square for a different random task?')) bact('reroll_open', { board: b.id }, 'Rerolled'); };
+  // The next drop: pick the task; it still goes out at its usual random time.
+  const nd = b.next_drop;
+  if (nd) {
+    const at = (t) => new Date(t).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+    const now = !nd.enabled ? 'Drops are off in this circle. Turn them on in its settings first.'
+      : nd.pending ? `Next: "${esc(nd.pending.title)}" (${DIFF[nd.pending.difficulty]}), goes out ${at(nd.pending.drops_at)}.`
+      : nd.saved ? `Next: "${esc(nd.saved.title)}" (${DIFF[nd.saved.difficulty]}, your pick), goes out with the next day's drop.`
+      : 'Next: a random task from the list, with the next day\'s drop.';
+    const card = $(`<div class="card" style="margin-top:12px;background:var(--surface2)"><b>Next drop</b><p class="muted" style="margin:6px 0 0">${now}</p>
+      ${nd.enabled ? `<div class="add" style="margin-top:8px"><input type="text" id="ndt" placeholder="Make the next drop…" style="flex:1;min-width:0"><select id="ndd" style="flex:none;width:100px"><option value="1">Easy</option><option value="2" selected>Medium</option><option value="3">Hard</option></select></div>
+      <div class="add"><input type="text" id="ndh" placeholder="How to prove it (optional)" style="flex:1;min-width:0"><button class="btn" id="nds">Set it</button>${nd.saved ? '<button class="x" id="ndc">Back to random</button>' : ''}</div>
+      <p class="faint" style="font-size:12px;margin:6px 0 0">Drops go out once a day at a random time between 9am and 9pm, worth double, until midnight.</p>` : ''}</div>`);
+    const set = card.querySelector('#nds'), clr = card.querySelector('#ndc');
+    if (set) set.onclick = () => {
+      const t = card.querySelector('#ndt').value.trim(); if (t.length < 3) return toast('Say what the task is', true);
+      bact('next_drop', { board: b.id, title: t, difficulty: +card.querySelector('#ndd').value, hint: card.querySelector('#ndh').value.trim() }, 'Set. It goes out as the next drop.');
+    };
+    if (clr) clr.onclick = () => bact('clear_next_drop', { board: b.id }, 'Back to random');
+    tools.append(card);
+  }
+  const db = tools.querySelector('#db');
+  if (db) db.onclick = () => { const t = tools.querySelector('#dt').value.trim(); if (t.length < 3) return toast('Say what the task is', true); bact('drop', { board: b.id, title: t, difficulty: +tools.querySelector('#dd').value, hours: +tools.querySelector('#dh').value }, 'Dropped. Everyone gets told in a few minutes.'); };
+  box.append(tools);
+}
+
+// Change anything about an existing circle. Each section saves on its own.
+async function editCircle(id) {
+  const [d, close] = drawer('<p class="muted">Loading…</p>');
+  let c;
+  const act = async (action, args, msg) => {
+    try { await rpc('admin_circle_action', { p_circle: id, p_action: action, p_args: args || {} }); toast(msg || 'Saved'); await draw(); load(); }
+    catch (e) { toast(e.message, true); }
+  };
+  const draw = async () => {
+    try { c = await rpc('admin_circle_detail', { p_circle: id }); } catch (e) { d.innerHTML = `<p class="bad">${esc(e.message)}</p>`; return; }
+    const members = (S.circles.find(x => x.id === id) || { members: [] }).members;
+    d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">${esc(c.emoji)} ${esc(c.name)}</h2><button type="button" class="x" data-close>Close</button></div>
+      <p class="sub" style="margin-top:6px">${c.challenge ? 'Challenge' : 'Habit'} · code <span class="mono">${esc(c.invite_code)}</span>${c.live_board ? ` · board: ${c.live_board.taken}/${c.live_board.squares} taken, ends ${new Date(c.live_board.ends_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}` : ''}</p>
+      <div class="card" style="margin-bottom:12px"><h3>Basics</h3>
+        <div style="display:flex;gap:8px">${field('Name', `<input type="text" id="nm" maxlength="40" value="${esc(c.name)}" style="width:100%">`)}${field('Icon', `<input type="text" id="em" maxlength="4" value="${esc(c.emoji)}" style="width:64px;text-align:center">`)}</div>
+        ${field('Owner (runs it in the app)', `<select id="ow">${members.map(m => `<option value="${m.id}" ${m.id === c.created_by ? 'selected' : ''}>${esc(m.display_name || m.username)}</option>`).join('')}</select>`)}
+        <button class="btn" id="sb">Save basics</button></div>
+      ${c.challenge ? `<div class="card" style="margin-bottom:12px" id="boards"><h3>Board</h3><p class="faint">Loading…</p></div><div class="card" style="margin-bottom:12px"><h3>Challenge rules</h3>${challengeFields(c, c.all_categories || [])}<button class="btn" id="sc">Save rules</button>
+          <p class="faint" style="font-size:12px">Changing the length, task source or categories re-deals boards that haven't started.</p></div>
+        <div class="card" style="margin-bottom:12px"><h3>Tasks <span class="faint">· ${c.tasks.length}</span></h3><p class="faint" style="margin:2px 0 8px">Approved tasks go into the pool; new ones land on the live board while there's room.</p><div id="tk"></div>
+          <div class="add"><input type="text" id="tt" placeholder="Add a task you can prove with a photo" style="flex:1;min-width:0"><select id="td" style="flex:none;width:100px"><option value="1">Easy</option><option value="2" selected>Medium</option><option value="3">Hard</option></select><button class="btn g" id="ta">Add</button></div></div>`
+      : `<div class="card" style="margin-bottom:12px"><h3>Habit</h3>${habitFields(c)}<button class="btn" id="sh">Save habit</button><p class="faint" style="font-size:12px">Renaming the habit renames it for everyone and tells them.</p></div>`}`;
+    d.querySelectorAll('[data-close]').forEach(b => b.onclick = close);
+    d.querySelector('#sb').onclick = async () => {
+      const nm = d.querySelector('#nm').value.trim(), em = d.querySelector('#em').value.trim(), ow = d.querySelector('#ow').value;
+      try {
+        if (nm && nm !== c.name) await rpc('admin_circle_action', { p_circle: id, p_action: 'rename', p_args: { name: nm } });
+        if (em && em !== c.emoji) await rpc('admin_circle_action', { p_circle: id, p_action: 'set_emoji', p_args: { emoji: em } });
+        if (ow && ow !== c.created_by) await rpc('admin_circle_action', { p_circle: id, p_action: 'set_owner', p_args: { user: ow } });
+        toast('Saved'); await draw(); load();
+      } catch (e) { toast(e.message, true); }
+    };
+    if (c.challenge) {
+      drawBoards(id, d.querySelector('#boards'));
+      wireLength(d);
+      d.querySelector('#sc').onclick = async () => {
+        const o = readChallenge(d);
+        try {
+          await rpc('admin_circle_action', { p_circle: id, p_action: 'settings', p_args: { challenge_days: o.challenge_days, task_source: o.task_source, categories: o.categories,
+            drops_enabled: o.drops_enabled, swaps_enabled: o.swaps_enabled, members_can_suggest: o.members_can_suggest, cooldown_minutes: o.cooldown_minutes } });
+          await rpc('admin_circle_action', { p_circle: id, p_action: 'stakes', p_args: { winner: o.stake_winner, top3: o.stake_top3, loser: o.stake_loser } });
+          toast('Saved'); await draw(); load();
+        } catch (e) { toast(e.message, true); }
+      };
+      const tk = d.querySelector('#tk');
+      c.tasks.forEach(t => {
+        const r = $(`<div class="member" style="gap:6px"><input type="text" value="${esc(t.title)}" style="flex:1;min-width:0">
+          <select style="width:92px;flex:none">${[1, 2, 3].map(x => `<option value="${x}" ${t.difficulty === x ? 'selected' : ''}>${DIFF[x]}</option>`).join('')}</select>
+          ${t.status === 'pending' ? `<button class="btn g ap" title="Suggested by ${esc(t.proposed_by || '?')}" style="flex:none;padding:6px 10px">Approve</button><button class="x pa" style="flex:none">Pass</button>` : `${t.on_board ? '<span class="chip g">on board</span>' : ''}<button class="x rm">Remove</button>`}</div>`);
+        if (t.status === 'pending') r.querySelector('input').placeholder = 'from ' + (t.proposed_by || '?');
+        const [ti, sd] = [r.querySelector('input'), r.querySelector('select')];
+        const save = () => { if (ti.value.trim() !== t.title || +sd.value !== t.difficulty) act('edit_task', { task: t.id, title: ti.value.trim(), difficulty: +sd.value }); };
+        ti.onblur = save; sd.onchange = save; ti.onkeydown = (e) => { if (e.key === 'Enter') ti.blur(); };
+        const ap = r.querySelector('.ap'), pa = r.querySelector('.pa'), rm = r.querySelector('.rm');
+        if (ap) ap.onclick = () => act('review_task', { task: t.id, approve: true }, 'Approved');
+        if (pa) pa.onclick = () => act('review_task', { task: t.id, approve: false }, 'Passed');
+        if (rm) rm.onclick = () => { if (confirm(`Remove "${t.title}"?`)) act('remove_task', { task: t.id }, 'Removed'); };
+        tk.append(r);
+      });
+      if (!c.tasks.length) tk.append($('<p class="faint">No own tasks yet. The board uses Alibi\'s list.</p>'));
+      const add = () => { const t = d.querySelector('#tt').value.trim(); if (t.length < 3) return toast('Say what the task is', true); act('add_task', { title: t, difficulty: +d.querySelector('#td').value }, 'Task added'); };
+      d.querySelector('#ta').onclick = add;
+      d.querySelector('#tt').onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } };
+    } else {
+      d.querySelector('#sh').onclick = () => { const h = readHabit(d); if (!h.habit) return toast('Say what everyone does', true); act('habit', { name: h.habit, cadence: h.cadence, weekly_target: h.weekly_target, per_day: h.per_day }); };
+    }
+  };
+  await draw();
+}
+
+// ---------- Missed days ----------
+function dayList(today, n) {
+  const out = [], d = new Date(today + 'T12:00:00');
+  for (let i = n - 1; i >= 0; i--) { const x = new Date(d); x.setDate(d.getDate() - i); out.push(x.toISOString().slice(0, 10)); }
+  return out;
+}
+function renderMissed(m) {
+  const N = 14, ids = new Set(visible(S.people).map(p => p.id));
+  const rows = (S.missed || []).filter(r => ids.has(r.user_id));
+  m.append($(`<div><h2>Missed days</h2><p class="sub">Last ${N} days in habit circles, in each person's own timezone. <span class="good">■</span> posted · half = some of the day's posts · <span class="bad">■</span> missed (every-day habits) · dim = before they joined · outlined = today, still going.</p></div>`));
+  const byCircle = {};
+  rows.forEach(r => (byCircle[r.circle] ||= []).push(r));
+  if (!rows.length) m.append($('<p class="faint">No habit circles yet.</p>'));
+  Object.entries(byCircle).forEach(([circle, rs]) => {
+    const days = dayList(rs[0].today, N);
+    const g = $(`<div class="card" style="margin-bottom:14px"><h3>${esc(circle)}</h3><div class="faint" style="margin-bottom:10px">${esc(rs[0].habit)} · ${howOften(rs[0])}</div>
+      <table><thead><tr><th>Person</th><th><div class="dayhead">${days.map(d => `<span>${'SMTWTFS'[new Date(d + 'T12:00:00').getDay()]}</span>`).join('')}</div></th><th>Missed</th><th>Posted</th></tr></thead><tbody></tbody></table></div>`);
+    rs.forEach(r => {
+      const mine = dayList(r.today, N), posted = new Set(r.posted_days), joined = r.joined_at.slice(0, 10);
+      let missed = 0, hit = 0;
+      const cells = mine.map(d => {
+        if (d < joined) return '<span class="d n"></span>';
+        if (posted.has(d)) { hit++; return `<span class="d p ${d === r.today ? 't' : ''}" title="${d}: posted"></span>`; }
+        const part = (r.partial_days || {})[d];
+        if (part) { if (d !== r.today && r.cadence === 'daily') missed++; return `<span class="d h ${d === r.today ? 't' : ''}" title="${d}: ${part} of ${r.per_day}"></span>`; }
+        if (d === r.today) return `<span class="d t" title="today"></span>`;
+        if (r.cadence === 'daily') { missed++; return `<span class="d m" title="${d}: missed"></span>`; }
+        return `<span class="d" title="${d}"></span>`;
+      }).join('');
+      const p = S.people.find(y => y.id === r.user_id) || r;
+      g.querySelector('tbody').append($(`<tr><td><div class="who">${av(p, 26)}<span>${esc(name(p))}</span></div></td><td><div class="days">${cells}</div></td>
+        <td class="${missed ? 'bad' : 'faint'}">${r.cadence === 'daily' ? missed : '—'}</td><td>${hit}</td></tr>`));
+    });
+    m.append(g);
+  });
+}
+
+// ---------- Log-ons ----------
+function renderOpens(m) {
+  const ids = new Set(visible(S.people).map(p => p.id));
+  const opens = (S.opens || []).filter(o => ids.has(o.user_id));
+  m.append($(`<div><h2>Log-ons</h2><p class="sub">Every app open in the last 14 days (an open = coming back after 30+ minutes away). ${opens.length} total. Logging started Oct 24; earlier days only show in People as "last on".</p></div>`));
+  const groups = {};
+  opens.forEach(o => (groups[new Date(o.at).toDateString()] ||= []).push(o));
+  Object.entries(groups).forEach(([day, os]) => {
+    const g = $(`<div class="daygroup"><h4>${new Date(day).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })} · ${os.length} opens · ${new Set(os.map(o => o.user_id)).size} people</h4></div>`);
+    os.forEach(o => { const p = S.people.find(y => y.id === o.user_id) || o; g.append($(`<div class="open"><span class="t mono">${new Date(o.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span><div class="who">${av(p, 24)}<span>${esc(name(p))}</span></div><span class="faint mono">${esc(o.build || '')}</span></div>`)); });
+    m.append(g);
+  });
+  if (!opens.length) m.append($('<p class="faint">No log-ons recorded yet.</p>'));
+}
+
+// ---------- Data ----------
+async function load(force) {
+  const m = document.getElementById('main'); if (m && force) m.innerHTML = '<p class="muted">Loading…</p>';
+  try {
+    const [people, circles, missed, opens, roster] = await Promise.all([rpc('admin_people'), rpc('admin_circles'), rpc('admin_missed', { p_days: 14 }), rpc('admin_opens', { p_days: 14 }), rpc('admin_roster')]);
+    Object.assign(S, { people, circles, missed, opens, roster });
+    await sign(people.map(p => p.avatar_path));
+    await loadPosts(true);
+    render();
+  } catch (e) {
+    if (/Admins only/.test(e.message)) { toast('That account is not an admin.', true); if (sb) await sb.auth.signOut(); return login(); }
+    toast(e.message, true);
+  }
+}
+
+// ---------- Sign in ----------
+function login(msg) {
+  app.innerHTML = '';
+  const f = $(`<form class="login"><div class="brand">ALIBI ADMIN</div><h1>Sign in</h1><p class="muted">Use your admin account's username or email, and password.</p>
+    <input type="text" id="em" placeholder="Username or email" autocomplete="username" autocapitalize="none" required><input type="password" id="pw" placeholder="Password" autocomplete="current-password" required>
+    <button class="btn" type="submit">Sign in</button><div class="err">${esc(msg || '')}</div></form>`);
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    const who = f.querySelector('#em').value.trim(), pw = f.querySelector('#pw').value, err = f.querySelector('.err');
+    if (who.includes('@')) {
+      const { error } = await sb.auth.signInWithPassword({ email: who, password: pw });
+      if (error) { err.textContent = 'Wrong email or password.'; return; }
+    } else {
+      // Usernames go through the app's sign-in function, which looks up the email server-side.
+      const r = await fetch(cfg.url + '/functions/v1/sign-in', { method: 'POST', headers: { 'content-type': 'application/json', apikey: cfg.key },
+                                                                body: JSON.stringify({ username: who, password: pw }) }).catch(() => null);
+      const j = r ? await r.json().catch(() => ({})) : { error: 'Could not reach the server.' };
+      if (!r || !r.ok) { err.textContent = j.error || 'Wrong username or password.'; return; }
+      const { error } = await sb.auth.setSession({ access_token: j.access_token, refresh_token: j.refresh_token });
+      if (error) { err.textContent = error.message; return; }
+    }
+    shell(); load(true);
+  };
+  app.append(f);
+}
+
+(async () => {
+  if (DEMO) { shell(); return load(true); }
+  if (!sb) { app.innerHTML = '<div class="login"><h1>Not set up</h1><p class="muted">Start this page with <span class="mono">zsh admin/serve.sh</span> so it can read the project settings.</p></div>'; return; }
+  const { data } = await sb.auth.getSession();
+  if (data.session) { shell(); load(true); } else login();
+})();
+
+// ---------- Demo data (open with ?demo to preview the layout) ----------
+function demo(fn, args) {
+  const today = new Date().toISOString().slice(0, 10), now = Date.now();
+  const iso = (h) => new Date(now - h * 3600e3).toISOString();
+  const day = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().slice(0, 10); };
+  const P = [['Maya Chen', 'maya', 1], ['Dev Patel', 'dev', 5], ['Liam O\'Brien', 'liam', 30], ['Sofia Reyes', 'sofia', 80]]
+    .map(([n, u, h], i) => ({ id: 'u' + i, display_name: n, username: u, avatar_path: null, created_at: iso(400), last_seen_at: iso(h), opens: 40 - i * 8, app_build: '1.0 (12)',
+      opens_7d: 20 - i * 5, days_on_7d: 7 - i * 2, proofs: 30 - i * 7, proofs_7d: 6 - i, last_post_at: iso(h + 2), test: false,
+      circles: [{ id: 'c0', name: '6am club', challenge: false }, ...(i < 3 ? [{ id: 'c1', name: 'Summer chaos', challenge: true }] : [])] }));
+  const photos = ['demo-photos/demo-gym-4162552.jpg', 'demo-photos/demo-read-2846814.jpg', 'demo-photos/demo-ch-6955644.jpg', 'demo-photos/demo-run-35115744.jpg'];
+  P.forEach((p, i) => p.avatar_path = null);
+  if (fn === 'admin_people') return P;
+  if (fn === 'admin_sets') return { reports: [{ id: 'rp1', set: 'Roommate chaos', reporter: 'Liam', reason: 'One task is mean', created_at: iso(3) }],
+    sets: [{ id: 's1', title: 'Gym rat week', emoji: '🏋️', description: 'Lifting stuff.', status: 'pending', official: false, author: 'Maya', task_count: 4, uses: 0, likes: 0, dislikes: 0, done_rate: null, created_at: iso(2), open_reports: 0,
+             tasks: [{ title: 'Hit a new PR', difficulty: 3 }, { title: 'Leg day', difficulty: 2 }, { title: 'Stretch 10 minutes', difficulty: 1 }, { title: 'Gym selfie', difficulty: 1 }] },
+           { id: 's2', title: 'Summer bucket list', emoji: '☀️', description: '', status: 'approved', official: true, author: 'John', task_count: 3, uses: 4, likes: 6, dislikes: 1, done_rate: 38, created_at: iso(50), open_reports: 0,
+             tasks: [{ title: 'Watch the sunrise', difficulty: 2 }, { title: 'Have a picnic', difficulty: 2 }, { title: 'Camp a night outside', difficulty: 3 }] }],
+    task_stats: [{ title: 'Read 30 pages', difficulty: 1, category: 'mind', active: true, dealt: 6, taken: 3 }, { title: 'Build a blanket fort', difficulty: 1, category: 'chaos', active: true, dealt: 9, taken: 0 }, { title: 'Do 100 squats today', difficulty: 1, category: 'fitness', active: false, dealt: 4, taken: 0 }] };
+  if (['admin_review_set', 'admin_delete_set', 'admin_save_set', 'admin_task_active'].includes(fn)) return null;
+  if (fn === 'admin_circle_action' || fn === 'admin_board_action' || fn === 'admin_board_dates' || fn === 'admin_set_test') return null;
+  if (fn === 'admin_pin_circle') { (window.__pins ||= {})[args.p_circle] = args.p_pinned ? iso(0) : null; return null; }
+  if (fn === 'admin_boards') {
+    const titles = ['Build a blanket fort', 'Swim 20 laps', 'Cook dinner for someone', 'Eat a meal outside', 'Watch the sunrise', 'Read 30 pages', 'Hike to a summit', 'Group photo with 5+', 'Try a new fruit', 'Do 100 squats', 'Sing karaoke', 'Do a 30-min yoga', 'Camp a night out', 'Dance video', 'Cold shower', 'Write a letter'];
+    const sq = titles.map((t, i) => ({ id: 'q' + i, pos: i, title: t, difficulty: 1 + (i % 3), points: [10, 20, 40][i % 3], is_drop: false, is_extra: false,
+      taker: [0, 1, 2, 3, 5, 6, 10].includes(i) ? ['Maya', 'Dev', 'You', 'Liam'][i % 4] : null, completed_by: [0, 1, 2, 3, 5, 6, 10].includes(i) ? 'u' + (i % 4) : null,
+      proof_id: [0, 1, 2, 3, 5, 6, 10].includes(i) ? 'p' + i : null, image_path: [0, 5, 10].includes(i) ? photos[i % 4] : null }));
+    sq.push({ id: 'qd', pos: null, title: 'Swim in a lake, river or the ocean', difficulty: 2, points: 40, is_drop: true, drops_at: iso(1), expires_at: iso(-20) });
+    return [{ id: 'b1', size: 4, live: true, starts_at: iso(72), ends_at: iso(-96), squares: sq,
+             next_drop: { enabled: true, saved: null, pending: { title: 'Eat something spicy on camera', difficulty: 1, drops_at: iso(-3) } }, scores: [{ name: 'Maya', points: 85 }, { name: 'You', points: 40 }, { name: 'Liam', points: 40 }, { name: 'Dev', points: 30 }] },
+            { id: 'b2', size: 4, live: false, starts_at: iso(-96), ends_at: iso(-264), squares: titles.map((t, i) => ({ id: 'n' + i, pos: i, title: t, difficulty: 1 + (i % 3), points: [10, 20, 40][i % 3], is_drop: false, is_extra: false })), scores: [] }];
+  }
+  if (fn === 'admin_circle_detail') return args.p_circle === 'c1'
+    ? { id: 'c1', name: 'Summer chaos', emoji: '🔥', challenge: true, invite_code: 'CHAOS1', created_by: 'u1', challenge_days: 14, task_source: 'mixed', categories: ['outdoors', 'social'],
+        all_categories: ['chaos', 'fitness', 'food', 'outdoors', 'social'], members_can_suggest: true, drops_enabled: true, swaps_enabled: false, cooldown_minutes: 120,
+        stake_winner: 'Picks the next restaurant', stake_top3: '', stake_loser: 'Buys the first round', live_board: { squares: 16, taken: 8, ends_at: iso(-60) },
+        tasks: [{ id: 't1', title: 'Swim in a lake', difficulty: 3, status: 'approved', on_board: true }, { id: 't2', title: 'Karaoke night', difficulty: 2, status: 'approved', on_board: false },
+                { id: 't3', title: 'Climb a tree', difficulty: 1, status: 'pending', proposed_by: 'Liam' }] }
+    : { id: 'c0', name: '6am club', emoji: '💪', challenge: false, invite_code: 'GYM6AM', created_by: 'u0', habit_name: 'Gym', cadence: 'weekly', weekly_target: 4, tasks: [] };
+  if (fn === 'admin_roster') return [
+    { id: 'r0', name: 'Maya', groups: 'DC, SG', plan: 'Both', status: 'confirmed', notes: '', user_id: 'u0', username: 'maya', display_name: 'Maya Chen', last_seen_at: iso(1), posts_7d: 6, circles: P[0].circles },
+    { id: 'r1', name: 'Dev', groups: 'DC', plan: 'Habit', status: 'asked', notes: 'Said maybe', user_id: 'u1', username: 'dev', display_name: 'Dev Patel', last_seen_at: iso(5), posts_7d: 0, circles: P[1].circles },
+    { id: 'r2', name: 'Jaya', groups: 'SG', plan: 'Challenge', status: 'planned', notes: '', user_id: null, circles: [], posts_7d: 0 },
+    { id: 'r3', name: 'Brian', groups: '', plan: '', status: 'declined', notes: 'No group yet', user_id: null, circles: [], posts_7d: 0 },
+    { id: 'r4', name: 'Liam', groups: 'SG', plan: 'Challenge', status: 'asked', notes: '', user_id: null, circles: [], posts_7d: 0 }];
+  if (fn === 'admin_circles') { const pins = window.__pins || {}; return [
+    { id: 'c0', name: '6am club', challenge: false, habit_name: 'Gym', cadence: 'daily', weekly_target: 7, invite_code: 'GYM6AM', creator: 'maya', posts_7d: 14, members: P.map(p => ({ id: p.id, username: p.username, display_name: p.display_name })) },
+    { id: 'c1', name: 'Summer chaos', challenge: true, invite_code: 'CHAOS1', creator: 'dev', posts_7d: 9, members: P.slice(0, 3).map(p => ({ id: p.id, username: p.username, display_name: p.display_name })) }].map(c => ({ ...c, pinned_at: pins[c.id] || null })).sort((a, b) => !!b.pinned_at - !!a.pinned_at); }
+  if (fn === 'admin_posts') return Array.from({ length: 8 }, (_, i) => ({ id: 'p' + i, created_at: iso(i * 7 + 1), caption: i % 2 ? 'Push day. Don\'t let me skip tomorrow.' : '', image_path: photos[i % 4],
+    author_id: P[i % 4].id, username: P[i % 4].username, display_name: P[i % 4].display_name, habit: 'Gym', task: i % 3 === 0 ? 'Eat a meal outside' : null,
+    circle: i % 3 === 0 ? 'Summer chaos' : '6am club', vouches: i % 3, doubts: i === 5 ? 1 : 0, voided_at: i === 6 ? iso(1) : null, video_path: null }))
+    .filter(x => !args || !args.p_user || x.author_id === args.p_user);
+  if (fn === 'admin_missed') return P.map((p, i) => ({ circle_id: 'c0', circle: '6am club', habit: 'Gym', cadence: 'daily', weekly_target: 7, user_id: p.id, username: p.username, display_name: p.display_name,
+    joined_at: i === 3 ? day(6) + 'T00:00:00Z' : day(30) + 'T00:00:00Z', today, posted_days: Array.from({ length: 14 }, (_, k) => day(k)).filter((_, k) => (k + i) % (i + 2) !== 0) }));
+  if (fn === 'admin_opens') return P.flatMap((p, i) => Array.from({ length: 6 - i }, (_, k) => ({ user_id: p.id, username: p.username, display_name: p.display_name, at: iso(k * 9 + i * 2 + 0.5), build: '1.0 (12)' })))
+    .filter(o => !args || !args.p_user || o.user_id === args.p_user).sort((a, b) => b.at.localeCompare(a.at));
+  return [];
+}
+</script>
+</body>
+</html>
